@@ -4,42 +4,41 @@ const rateInput = document.getElementById("rate");
 const pitchInput = document.getElementById("pitch");
 const rateValue = document.getElementById("rateValue");
 const pitchValue = document.getElementById("pitchValue");
+const statusDiv = document.getElementById("status");
 
 let voices = [];
+let currentUtterance = null;
 
-// Fungsi untuk memuat semua daftar suara bawaan browser/sistem
 function populateVoiceList() {
     voices = synth.getVoices();
     voiceSelect.innerHTML = '';
     
-    voices.forEach((voice, index) => {
+    voices.forEach((voice) => {
         const option = document.createElement('option');
         option.textContent = `${voice.name} (${voice.lang})`;
         option.setAttribute('data-lang', voice.lang);
         option.setAttribute('data-name', voice.name);
         
-        // Pilih bahasa Indonesia (id-ID) sebagai default jika tersedia
-        if (voice.lang === 'id-ID') {
+        if (voice.lang === 'id-ID' || voice.lang.startsWith('id')) {
             option.selected = true;
         }
-        
         voiceSelect.appendChild(option);
     });
 }
 
-// Menangani sinkronisasi daftar suara di berbagai browser
 populateVoiceList();
 if (synth.onvoiceschanged !== undefined) {
     synth.onvoiceschanged = populateVoiceList;
 }
 
-// Menampilkan nilai slider secara dinamis saat digeser
 rateInput.addEventListener('input', () => { rateValue.textContent = rateInput.value; });
 pitchInput.addEventListener('input', () => { pitchValue.textContent = pitchInput.value; });
 
-// Fungsi utama untuk menjalankan text to speech
+function updateStatus(msg) {
+    statusDiv.textContent = msg;
+}
+
 function proses() {
-    // Menghentikan suara yang sedang berjalan jika tombol diklik ulang
     if (synth.speaking) {
         synth.cancel();
     }
@@ -50,19 +49,41 @@ function proses() {
         return;
     }
     
-    const utterance = new SpeechSynthesisUtterance(teks);
-    
-    // Mendapatkan suara yang dipilih pengguna dari dropdown
+    currentUtterance = new SpeechSynthesisUtterance(teks);
     const selectedVoiceName = voiceSelect.selectedOptions[0].getAttribute('data-name');
     const selectedVoice = voices.find(v => v.name === selectedVoiceName);
     
     if (selectedVoice) {
-        utterance.voice = selectedVoice;
+        currentUtterance.voice = selectedVoice;
     }
     
-    // Memasukkan pengaturan kecepatan dan nada suara
-    utterance.rate = parseFloat(rateInput.value);
-    utterance.pitch = parseFloat(pitchInput.value);
+    currentUtterance.rate = parseFloat(rateInput.value);
+    currentUtterance.pitch = parseFloat(pitchInput.value);
     
-    synth.speak(utterance);
+    currentUtterance.onstart = () => updateStatus("💬 Sedang bersuara...");
+    currentUtterance.onend = () => updateStatus("✅ Selesai.");
+    currentUtterance.onerror = () => updateStatus("❌ Terjadi kesalahan.");
+
+    synth.speak(currentUtterance);
+}
+
+function pauseAudio() {
+    if (synth.speaking && !synth.paused) {
+        synth.pause();
+        updateStatus("⏸ Suara dijeda (Pause).");
+    }
+}
+
+function resumeAudio() {
+    if (synth.paused) {
+        synth.resume();
+        updateStatus("💬 Melanjutkan suara...");
+    }
+}
+
+function stopAudio() {
+    if (synth.speaking) {
+        synth.cancel();
+        updateStatus("⏹ Suara dihentikan.");
+    }
 }
