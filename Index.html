@@ -16,17 +16,29 @@
             <select id="voiceSelect"></select>
         </div>
 
-        <div class="control-group">
-            <label for="rate">Kecepatan: <span id="rateValue">1</span>x</label>
-            <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
+        <div class="control-row">
+            <div class="control-group half">
+                <label for="rate">Kecepatan: <span id="rateValue">1</span>x</label>
+                <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
+            </div>
+
+            <div class="control-group half">
+                <label for="pitch">Nada (Pitch): <span id="pitchValue">1</span></label>
+                <input type="range" id="pitch" min="0.5" max="1.5" value="1" step="0.1">
+            </div>
         </div>
 
-        <div class="control-group">
-            <label for="pitch">Nada (Pitch): <span id="pitchValue">1</span></label>
-            <input type="range" id="pitch" min="0" max="2" value="1" step="0.1">
+        <div class="btn-group">
+            <button id="btnSpeak" onclick="proses()" class="btn-primary">🔊 Putar Suara</button>
         </div>
 
-        <button onclick="proses()">Ubah ke Suara</button>
+        <div class="btn-group-row">
+            <button id="btnPause" onclick="pauseAudio()" class="btn-secondary">⏸ Pause</button>
+            <button id="btnResume" onclick="resumeAudio()" class="btn-secondary">▶ Resume</button>
+            <button id="btnStop" onclick="stopAudio()" class="btn-danger">⏹ Stop</button>
+        </div>
+
+        <div id="status" class="status-msg"></div>
     </div>
     <script src="script.js"></script>
 </body>
