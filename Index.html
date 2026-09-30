@@ -2,13 +2,30 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Aplikasi Text to Speech</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Text to Speech Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h2>Aplikasi Text to Speech</h2>
+        <h2>Text to Speech Pro</h2>
         <textarea id="pesan" placeholder="Ketik teks di sini..."></textarea>
+        
+        <div class="control-group">
+            <label for="voiceSelect">Pilih Suara / Bahasa:</label>
+            <select id="voiceSelect"></select>
+        </div>
+
+        <div class="control-group">
+            <label for="rate">Kecepatan: <span id="rateValue">1</span>x</label>
+            <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
+        </div>
+
+        <div class="control-group">
+            <label for="pitch">Nada (Pitch): <span id="pitchValue">1</span></label>
+            <input type="range" id="pitch" min="0" max="2" value="1" step="0.1">
+        </div>
+
         <button onclick="proses()">Ubah ke Suara</button>
     </div>
     <script src="script.js"></script>
